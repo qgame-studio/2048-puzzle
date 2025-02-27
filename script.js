@@ -86,8 +86,9 @@ class GameComponent extends HTMLElement {
         }
 
         .grid-container {
+          --gap: 10px;
+          padding: var(--gap);
           background-color: var(--border-color);
-          padding: 12px;
           border-radius: var(--radius);
           display: inline-block;
           position: relative;
@@ -97,7 +98,7 @@ class GameComponent extends HTMLElement {
 
         .grid {
           display: grid;
-          grid-gap: 12px;
+          grid-gap: var(--gap);
           position: relative;
         }
 
@@ -117,8 +118,9 @@ class GameComponent extends HTMLElement {
         }
 
         .cell {
-          width: 80px;
-          height: 80px;
+          --size: 80px;
+          width: var(--size);
+          height: var(--size);
           background-color: var(--card-bg);
           border-radius: 6px;
           display: flex;
@@ -132,21 +134,20 @@ class GameComponent extends HTMLElement {
         }
 
         .cell.size-5 {
-          width: 65px;
-          height: 65px;
+          --size: 65px;
           font-size: 24px;
         }
 
         .cell.size-6 {
-          width: 55px;
-          height: 55px;
+          --size: 55px;
           font-size: 20px;
         }
 
         .tile {
+          --size: 80px;
           position: absolute;
-          width: 80px;
-          height: 80px;
+          width: var(--size);
+          height: var(--size);
           border-radius: 6px;
           display: flex;
           justify-content: center;
@@ -158,18 +159,22 @@ class GameComponent extends HTMLElement {
           transition: all 0.15s ease;
           animation: appear 0.2s;
           z-index: 10;
+          left: calc(var(--col) * (var(--size) + var(--gap)) + var(--gap));
+          top: calc(var(--row) * (var(--size) + var(--gap)) + var(--gap));
         }
 
         .tile.size-5 {
-          width: 65px;
-          height: 65px;
+          --size: 65px;
           font-size: 24px;
+          left: calc(var(--col) * (var(--size) + var(--gap)) + var(--gap));
+          top: calc(var(--row) * (var(--size) + var(--gap)) + var(--gap));
         }
 
         .tile.size-6 {
-          width: 55px;
-          height: 55px;
+          --size: 55px;
           font-size: 20px;
+          left: calc(var(--col) * (var(--size) + var(--gap)) + var(--gap));
+          top: calc(var(--row) * (var(--size) + var(--gap)) + var(--gap));
         }
 
         .tile.merged {
@@ -426,40 +431,38 @@ class GameComponent extends HTMLElement {
 
         @media (max-width: 500px) {
           .cell, .tile {
-            width: 65px;
-            height: 65px;
+            --size: 65px;
             font-size: 22px;
           }
 
           .cell.size-5, .tile.size-5 {
-            width: 55px;
-            height: 55px;
+            --size: 55px;
             font-size: 20px;
           }
           
           .cell.size-6, .tile.size-6 {
-            width: 45px;
-            height: 45px;
+            --size: 45px;
             font-size: 16px;
           }
         }
 
         @media (max-width: 400px) {
+          .grid-container {
+            --gap: 8px;
+          }
+
           .cell, .tile {
-            width: 55px;
-            height: 55px;
+            --size: 50px;
             font-size: 20px;
           }
 
           .cell.size-5, .tile.size-5 {
-            width: 45px;
-            height: 45px;
+            --size: 40px;
             font-size: 18px;
           }
           
           .cell.size-6, .tile.size-6 {
-            width: 35px;
-            height: 35px;
+            --size: 32px;
             font-size: 14px;
           }
         }
@@ -761,19 +764,12 @@ class GameComponent extends HTMLElement {
     const gridContainer = this.shadowRoot.getElementById('grid-container');
     const tileElement = document.createElement('div');
 
-    // Calculate position
-    const cellSize = this.gridSize === 4 ? 80 : this.gridSize === 5 ? 65 : 55;
-    const gapSize = 12;
-
-    const left = col * (cellSize + gapSize) + 12;
-    const top = row * (cellSize + gapSize) + 12;
-
     // Set tile properties
     tileElement.className = `tile tile-${value} size-${this.gridSize}`;
     if (isNew) tileElement.classList.add('new');
 
-    tileElement.style.left = `${left}px`;
-    tileElement.style.top = `${top}px`;
+    tileElement.style.setProperty('--col', col);
+    tileElement.style.setProperty('--row', row);
     tileElement.textContent = value;
 
     // Add to the grid
